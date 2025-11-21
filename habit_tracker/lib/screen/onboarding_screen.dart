@@ -11,31 +11,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _controller = PageController();
   int _currentPage = 0;
 
-  // ✅ 3 Different Images + Text
   final List<Map<String, String>> onboardingData = [
     {
       "title": "Welcome to Habit Tracker",
       "desc": "Build powerful routines. Achieve your goals!",
-      "image": "assets/onboarding1.png" 
+      "image": "assets/onboarding1.png"
     },
     {
       "title": "Track Your Progress",
       "desc": "Monitor your daily goals and see your improvements.",
-      "image": "assets/onboarding2.png" 
+      "image": "assets/onboarding2.png"
     },
     {
       "title": "Stay Motivated",
       "desc": "Get reminders and celebrate your small wins!",
-      "image": "assets/onboarding3.png" 
+      "image": "assets/onboarding3.png"
     },
   ];
 
   void nextPage() {
     if (_currentPage < onboardingData.length - 1) {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 100),
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+    } else {
+      // Navigate to Login screen after last page
+      Navigator.pushReplacementNamed(context, '/login');
     }
   }
 
@@ -56,16 +58,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // ✅ Skip Button
+              // Skip button
               Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Skipped to Home (Add navigation)!"),
-                      ),
-                    );
+                    Navigator.pushReplacementNamed(context, '/login');
                   },
                   child: const Text(
                     "Skip",
@@ -74,7 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // ✅ PageView for 3 Screens
+              // PageView
               Expanded(
                 child: PageView.builder(
                   controller: _controller,
@@ -118,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // ✅ Bottom Section (Dots + Next/Get Started)
+              // Bottom section
               Container(
                 height: 100,
                 width: double.infinity,
@@ -128,7 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // --- Dots Indicator ---
+                    // Dots indicator
                     Row(
                       children: List.generate(
                         onboardingData.length,
@@ -147,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
 
-                    // --- Next / Get Started Button ---
+                    // Next / Get Started button
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
@@ -158,18 +156,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         elevation: 6,
                       ),
-                      onPressed: () {
-                        if (_currentPage == onboardingData.length - 1) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text("🎉 Get Started clicked! (Next: Home)"),
-                            ),
-                          );
-                        } else {
-                          nextPage();
-                        }
-                      },
+                      onPressed: nextPage,
                       child: Text(
                         _currentPage == onboardingData.length - 1
                             ? "Get Started"

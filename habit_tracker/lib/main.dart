@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'onboarding_screen.dart'; // ✅ import the onboarding file
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-void main() {
+// Screens
+import 'screen/onboarding_screen.dart';
+import 'screen/home_screen.dart';
+
+// Auth
+import 'auth/login_screen.dart';
+import 'auth/register_screen.dart';
+import 'auth/forgot_password.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -16,12 +31,17 @@ class MyApp extends StatelessWidget {
       title: 'Habit Tracker',
       home: const SplashScreen(),
       routes: {
-        '/onboarding': (context) => const OnboardingScreen(), // ✅ route added
+        '/onboarding': (context) => const OnboardingScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/forgot': (context) => const ForgotPassword(),
+        '/home': (context) =>  HomeScreen(),
       },
     );
   }
 }
 
+// Splash Screen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -56,9 +76,14 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
 
-    // ✅ Move to OnboardingScreen after 2 seconds
-    Timer(const Duration(seconds: 1), () {
-      Navigator.pushReplacementNamed(context, '/onboarding');
+    // ⏱ Navigate after Splash
+    Timer(const Duration(seconds: 2), () {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+      } else {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     });
   }
 
@@ -74,7 +99,10 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 247, 211, 245), Color.fromARGB(255, 241, 217, 230)],
+            colors: [
+              Color.fromARGB(255, 247, 211, 245),
+              Color.fromARGB(255, 241, 217, 230)
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -118,4 +146,4 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-} 
+}
